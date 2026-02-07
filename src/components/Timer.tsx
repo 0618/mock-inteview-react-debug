@@ -5,7 +5,8 @@ export const Timer = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setSeconds((s) => s + 1);
+      // TODO: Bug 3 - Timer gets stuck at 1s
+      setSeconds(seconds + 1);
     }, 1000);
 
     return () => clearInterval(interval);

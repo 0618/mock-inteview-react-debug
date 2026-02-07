@@ -1,73 +1,39 @@
-# React + TypeScript + Vite
+# Mock Interview React Debugging Exercise
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+This repository contains a simple React application with a few common bugs. It is designed for a mock interview to test a candidate's ability to debug and fix React issues.
 
-Currently, two official plugins are available:
+## Branches
+- **`candidate`**: The branch with the buggy code. Use this for the interview.
+- **`master`** (or `main`): The branch with the working solution.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Instructions for Interviewer Setup
+1.  Clone this repository.
+2.  Checkout the `candidate` branch: `git checkout candidate`.
+3.  Run `npm install`.
+4.  Run `npm run dev` to start the app.
+5.  Share your screen or the localhost URL with the candidate.
 
-## React Compiler
+## Scenario for Candidate
+"Welcome! We have a simple 'User Dashboard' application that seems to be acting up. There are 3 main issues reported by our users. Your task is to find them and fix them."
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### The Issues
+1.  **Search is broken**: When typing in the search bar, the user list doesn't update.
+2.  **Delete button doesn't work**: Clicking "Delete" on a user console logs the action, but the user remains on the screen.
+3.  **Timer is stuck**: The timer at the top starts at 0, ticks to 1, and then stops.
 
-## Expanding the ESLint configuration
+## Solutions (For Interviewer Eyes Only)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Bug 1: Broken Search
+- **Cause**: The `useEffect` in `UserList.tsx` is missing `searchTerm` in its dependency array. It only runs once on mount.
+- **Fix**: Add `[searchTerm]` to the dependency array.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Bug 2: Impossible Delete
+- **Cause**: In `UserList.tsx`, the `handleDelete` function mutates the `users` array directly (`splice`) and then calls `setUsers` with the *same array reference*. React bails out of the update because the reference hasn't changed.
+- **Fix**: Create a new array, e.g., `setUsers(users.filter(u => u.id !== id))`.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Bug 3: Stuck Timer
+- **Cause**: In `Timer.tsx`, the `setInterval` closure captures the initial value of `seconds` (0). It repeatedly calls `setSeconds(0 + 1)`.
+- **Fix**: Use the functional update form: `setSeconds(s => s + 1)`.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Good Luck!

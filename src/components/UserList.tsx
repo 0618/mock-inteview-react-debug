@@ -5,7 +5,7 @@ export const UserList = () => {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Bug 1 Fix: Dependency array includes searchTerm
+  // TODO: Bug 1 - Search filter doesn't update when typing
   useEffect(() => {
     if (searchTerm === '') {
       setUsers(initialUsers);
@@ -15,11 +15,16 @@ export const UserList = () => {
       );
       setUsers(filtered);
     }
-  }, [searchTerm]);
+  }, []); // Missing searchTerm dependency
 
   const handleDelete = (id: number) => {
-    // Bug 2 Fix: Immutable state update
-    setUsers(users.filter(user => user.id !== id));
+    // TODO: Bug 2 - Delete doesn't update UI
+    const index = users.findIndex(user => user.id === id);
+    if (index !== -1) {
+      users.splice(index, 1); // Direct mutation
+      setUsers(users); // Same reference, no re-render
+      console.log('User deleted:', id);
+    }
   };
 
   return (
