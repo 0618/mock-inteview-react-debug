@@ -5,7 +5,6 @@ export const UserList = () => {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // TODO: Bug 1 - Search filter doesn't update when typing
   useEffect(() => {
     if (searchTerm === '') {
       setUsers(initialUsers);
@@ -15,14 +14,13 @@ export const UserList = () => {
       );
       setUsers(filtered);
     }
-  }, []); // Missing searchTerm dependency
+  }, []);
 
   const handleDelete = (id: number) => {
-    // TODO: Bug 2 - Delete doesn't update UI
     const index = users.findIndex(user => user.id === id);
     if (index !== -1) {
-      users.splice(index, 1); // Direct mutation
-      setUsers(users); // Same reference, no re-render
+      users.splice(index, 1);
+      setUsers(users); 
       console.log('User deleted:', id);
     }
   };
